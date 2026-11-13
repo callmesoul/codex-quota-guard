@@ -40,7 +40,7 @@ def plugin_version() -> str:
         return "0.0.0"
 
 
-ICON_SIZES = ["24x24"]
+ICON_SIZES = ["48x48"]
 
 
 def icon_data_uri() -> str:

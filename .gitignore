@@ -18,6 +18,7 @@ yarn-error.log*
 # --- Panel sub-project: keep source, drop build + lockfile churn ---
 panel/handoff-board-panel/node_modules/
 panel/handoff-board-panel/dist/
+panel/handoff-board-panel/tsconfig.tsbuildinfo
 panel/handoff-board-panel/.git/
 
 # --- Local runtime state / secrets ---

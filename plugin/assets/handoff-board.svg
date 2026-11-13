@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-     stroke="#7c7c82" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"
+     stroke="#7c7c82" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
   <!-- board: the thing you are looking at -->
-  <rect x="2.75" y="4.75" width="12.5" height="14.5" rx="2.5"/>
-  <path d="M6.25 9.4h6M6.25 12.4h4"/>
+  <rect x="5.5" y="9.5" width="25" height="29" rx="5"/>
+  <path d="M12.5 18.8h12M12.5 24.8h8"/>
   <!-- handoff: work leaving the board for the next session -->
-  <path d="M15.5 12h5.6"/>
-  <path d="M18.7 8.9 21.8 12 18.7 15.1"/>
+  <path d="M31 24h11.2"/>
+  <path d="M37.4 17.8 43.6 24 37.4 30.2"/>
 </svg>
