@@ -108,6 +108,18 @@ cd codex-quota-guard
 
 验证：随便跑一次 Codex 会话，然后看 `~/.codex/quota-guard/hook.log` 有没有新的 `SessionStart` / `Stop` 记录。**没有记录 = hook 没被信任**（失效的 hook 是静默跳过的），重跑 `python3 scripts/hook_trust.py --apply`，或在 CLI 里执行 `/hooks`、桌面版 `Settings > Hooks` 手动信任。临时绕过用 `codex --dangerously-bypass-hook-trust`。
 
+### 只装 handoff-board 插件（不用整个仓库）
+
+插件单独也能装 —— `.agents/plugins/marketplace.json` 把 `./plugin` 暴露成一个 marketplace：
+
+```bash
+codex plugin marketplace add callmesoul/codex-quota-guard          # GitHub 源
+codex plugin add handoff-board@codex-quota-guard
+```
+
+想锁版本就 `codex plugin marketplace add callmesoul/codex-quota-guard@v0.4.3`，本地目录直接给路径也行。
+插件是**本地 stdio MCP**，跑之前确认那个 home 的 `config.toml` 里有 `[features] enable_mcp_apps = true`。
+
 ### 让 agent 自己装
 
 把仓库路径和下面这段一起丢给任意能跑 shell 的 agent（Codex、Claude Code、Cursor 都行），它能自己装完并自检：
@@ -323,6 +335,7 @@ codex-quota-guard/
 - [`PLAN.md`](PLAN.md) —— 实现方案与事故记录：为什么这么设计、每个坑怎么发现的
 - [`plugin/README.md`](plugin/README.md) —— Codex 插件与面板细节
 - [`dsh-plugin/README.md`](dsh-plugin/README.md) —— DSH 插件与宿主/浏览器两半的分工
+- [`docs/publishing.md`](docs/publishing.md) —— 把 handoff-board 发布出去的三条通道与自查表
 
 ## 许可
 
