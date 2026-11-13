@@ -18,7 +18,7 @@
   "requires_local_executor": true,
   "interface": {
     "displayName": "Handoff Board",
-    "shortDescription": "Project / session / handoff browser for Codex",
+    "shortDescription": "Browse handoffs by project",
     "longDescription": "Reads ~/.codex/sessions rollouts and every <project>/.handoff/<utc>-<slug>/ pair written by codex-quota-guard, then renders one panel grouped by project, session and handoff document. Opens from the global desktop sidebar, inline as a visualization, or as a standalone local web panel.",
     "developerName": "callmesoul",
     "category": "Developer Tools",

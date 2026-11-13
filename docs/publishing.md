@@ -104,7 +104,7 @@ handoff-board 是「**本地 stdio MCP + 技能**」的桌面专属包（`plugin
 | `description` | ≤4000 | ✅ |
 | `author.name` | ≤120 | ✅ `callmesoul` |
 | `interface.displayName` | ≤30 | ✅ `Handoff Board`（13） |
-| `interface.shortDescription` | **≤30** | ❌ 45 字符，需压短 |
+| `interface.shortDescription` | **≤30** | ✅ `Browse handoffs by project`（26） |
 | `interface.longDescription` | ≤4000 | ✅ 285 |
 | `interface.developerName` | ≤80 | ✅ |
 | `interface.category` | 必填 | ✅ `Developer Tools` |
