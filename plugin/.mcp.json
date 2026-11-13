@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "handoff_board": {
+      "command": "python3",
+      "args": [
+        "./server.py"
+      ],
+      "cwd": ".",
+      "enabled": true,
+      "env_vars": [
+        "CODEX_HOME",
+        "HOME",
+        "PATH",
+        "PYTHONIOENCODING",
+        "PYTHONUTF8"
+      ],
+      "startup_timeout_sec": 10,
+      "tool_timeout_sec": 30
+    }
+  }
+}

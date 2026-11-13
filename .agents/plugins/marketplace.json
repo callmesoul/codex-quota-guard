@@ -1,0 +1,20 @@
+{
+  "name": "codex-quota-guard",
+  "interface": {
+    "displayName": "Codex Quota Guard (local)"
+  },
+  "plugins": [
+    {
+      "name": "handoff-board",
+      "source": {
+        "source": "local",
+        "path": "./plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

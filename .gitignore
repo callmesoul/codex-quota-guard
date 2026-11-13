@@ -1,0 +1,40 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+.venv/
+venv/
+
+# --- Node / panel build ---
+node_modules/
+dist/
+.vite/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-error.log*
+
+# --- Panel sub-project: keep source, drop build + lockfile churn ---
+panel/handoff-board-panel/node_modules/
+panel/handoff-board-panel/dist/
+panel/handoff-board-panel/.git/
+
+# --- Local runtime state / secrets ---
+.workbuddy/
+.env
+.env.*
+!.env.example
+*.local.json
+*.token
+*.secret
+
+# --- Editor / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# --- Handoff artifacts written into projects ---
+.handoff/

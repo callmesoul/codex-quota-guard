@@ -1,0 +1,595 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "shadcn-vue/tailwind.css";
+
+/* The host marks dark mode with :root[data-theme="dark"]; the standalone page
+   uses .dark on <html>. Support both so `dark:` utilities stay meaningful. */
+@custom-variant dark (&:is(.dark *, [data-theme="dark"] *));
+
+@theme inline {
+  --breakpoint-panel: 820px;
+  --breakpoint-narrow: 560px;
+  --color-background: var(--background, #ffffff);
+  --color-foreground: var(--foreground, #14161a);
+  --color-card: var(--card, color-mix(in oklab, var(--foreground, #14161a) 5%, var(--background, #ffffff)));
+  --color-card-foreground: var(--card-foreground, var(--foreground, #14161a));
+  --color-popover: var(--popover, var(--background, #ffffff));
+  --color-popover-foreground: var(--popover-foreground, var(--foreground, #14161a));
+  --color-primary: var(--primary, #1a6dd6);
+  --color-primary-foreground: var(--primary-foreground, #ffffff);
+  --color-secondary: var(--secondary, #eceef2);
+  --color-secondary-foreground: var(--secondary-foreground, var(--foreground, #14161a));
+  --color-muted: var(--muted, #f0f1f4);
+  --color-muted-foreground: var(--muted-foreground, #5c626d);
+  --color-accent: var(--accent, #e5f0fd);
+  --color-accent-foreground: var(--accent-foreground, var(--primary, #1a6dd6));
+  --color-destructive: var(--destructive, #c2410c);
+  --color-border: var(--border, #dcdfe5);
+  --color-input: var(--input, #d3d7de);
+  --color-ring: var(--ring, #1a6dd6);
+  --radius-sm: calc(var(--radius, 0.625rem) * 0.6);
+  --radius-md: calc(var(--radius, 0.625rem) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius, 0.625rem) * 1.4);
+  --radius-2xl: calc(var(--radius, 0.625rem) * 1.8);
+  --radius-3xl: calc(var(--radius, 0.625rem) * 2.2);
+  --radius-4xl: calc(var(--radius, 0.625rem) * 2.6);
+}
+
+/* Colour tokens come from whoever renders the fragment:
+   - inline visualization: the host's visualize.css defines --background,
+     --foreground, --card, ... on :root and flips them with data-theme;
+   - standalone page: STANDALONE_TOKENS (handoff_board.py) defines the same
+     names on :root and flips them with prefers-color-scheme.
+   The fragment therefore must NOT redefine them: a local :root block would
+   shadow the host palette, and any light-dark() copied here gets downlevelled
+   by the CSS minifier into --lightningcss-* variables that are never defined. */
+
+/* Inside DSH the board is a main panel, not an iframe fragment: map the colour
+   tokens the components already read onto the harness aliases so the board
+   follows the app theme, and let the panel fill the centre column. Scoped to
+   .hb-dsh-panel so the Codex fragment keeps the host palette untouched. */
+@layer base {
+  #hb-root.hb-dsh-panel {
+    --background: var(--dsw-alias-bg-base, #ffffff);
+    --foreground: var(--dsw-alias-label-primary, #14161a);
+    --card: var(--dsw-alias-bg-layer-1, color-mix(in oklab, var(--foreground, #14161a) 5%, var(--background, #ffffff)));
+    --card-foreground: var(--dsw-alias-label-primary, var(--foreground, #14161a));
+    --popover: var(--dsw-alias-bg-layer-2, var(--background, #ffffff));
+    --popover-foreground: var(--dsw-alias-label-primary, var(--foreground, #14161a));
+    --primary: var(--dsw-alias-brand-primary, #1a6dd6);
+    --primary-foreground: var(--dsw-alias-label-primary-foreground, #ffffff);
+    --secondary: var(--dsw-alias-interactive-bg-hover, #eceef2);
+    --secondary-foreground: var(--dsw-alias-label-primary, var(--foreground, #14161a));
+    --muted: var(--dsw-alias-bg-layer-2, #f0f1f4);
+    --muted-foreground: var(--dsw-alias-label-secondary, #5c626d);
+    --accent: var(--dsw-alias-interactive-bg-hover, #e5f0fd);
+    --accent-foreground: var(--dsw-alias-label-primary, var(--primary, #1a6dd6));
+    --destructive: var(--dsw-alias-state-error-primary, #c2410c);
+    --border: var(--dsw-alias-border-l2, #dcdfe5);
+    --input: var(--dsw-alias-border-l3, #d3d7de);
+    --ring: var(--dsw-alias-brand-primary, #1a6dd6);
+
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    min-height: 0;
+    min-width: 0;
+    overflow: auto;
+    padding: 12px 16px 16px;
+    background: var(--dsw-alias-bg-base, #ffffff);
+  }
+
+  #hb-root.hb-dsh-panel > .flex {
+    min-height: 0;
+  }
+}
+/* Scoped stand-in for Tailwind's preflight: the fragment shares a document with
+   the host kit, so a global reset would rewrite the host's own margins. */
+@layer base {
+  #hb-root,
+  #hb-root *,
+  #hb-root *::before,
+  #hb-root *::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border, #dcdfe5);
+  }
+
+  #hb-root {
+    display: block;
+    min-width: 0;
+    color: var(--foreground, #14161a);
+    font-family: var(--hb-font-sans, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+    font-size: var(--font-size-base, 14px);
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  #hb-root h1,
+  #hb-root h2,
+  #hb-root h3,
+  #hb-root h4 {
+    font-size: inherit;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  #hb-root ul,
+  #hb-root ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  #hb-root button {
+    font: inherit;
+    letter-spacing: inherit;
+    color: inherit;
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  #hb-root a {
+    color: var(--primary, #1a6dd6);
+    text-decoration: none;
+  }
+
+  #hb-root a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* Rendered HANDOFF.md + board chrome. v-html content cannot carry per-element
+   utilities, so the markdown surface keeps a small component stylesheet. The
+   board chrome lives here too: rows, chips and the document shell are repeated
+   primitives whose hover/selected states read better as one rule than as long
+   utility strings on every element. */
+@layer components {
+  /* ---- board shell -------------------------------------------------- */
+
+  /* One column height for all three panes: the two lists and the document
+     shell grow together, so switching project never reflows the page. */
+  .hb-board {
+    --hb-pane: clamp(20rem, 58vh, 44rem);
+    align-items: start;
+  }
+
+  .hb-list {
+    height: var(--hb-pane);
+    border-radius: var(--radius-lg);
+  }
+
+  .hb-col-title {
+    display: flex;
+    align-items: baseline;
+    gap: 0.35rem;
+    min-width: 0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-col-count {
+    font-size: 10px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted-foreground, #5c626d);
+    opacity: 0.7;
+  }
+
+  .hb-col-project {
+    margin-left: auto;
+    overflow: hidden;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0;
+    text-transform: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--foreground, #14161a);
+    opacity: 0.6;
+  }
+
+  /* ---- rows -------------------------------------------------------- */
+
+  .hb-row {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1px;
+    padding: 0.3rem 0.45rem;
+    border-radius: var(--radius-md);
+    text-align: left;
+    transition: background-color 120ms ease, box-shadow 120ms ease;
+  }
+
+  .hb-row:hover {
+    background: color-mix(in oklab, var(--foreground, #14161a) 6%, transparent);
+  }
+
+  .hb-row:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--ring, #1a6dd6);
+  }
+
+  /* Selected rows keep a left rail as well as a tint, so the active row is
+     findable when the list is scrolled or the tint is subtle in dark mode. */
+  .hb-row-on,
+  .hb-row-on:hover {
+    background: color-mix(in oklab, var(--primary, #1a6dd6) 12%, transparent);
+    box-shadow: inset 2px 0 0 var(--primary, #1a6dd6);
+  }
+
+  .hb-meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 10.5px;
+    line-height: 1.35;
+    color: var(--muted-foreground, #5c626d);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hb-sep {
+    opacity: 0.45;
+  }
+
+  /* Handoff count on a project/session row: a small dot beats a badge here —
+     at 10px a rounded badge reads as a control, a dot reads as a count. */
+  .hb-dot {
+    display: inline-flex;
+    height: 1rem;
+    min-width: 1rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 0.2rem;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--primary, #1a6dd6) 16%, transparent);
+    color: var(--primary, #1a6dd6);
+    font-size: 9.5px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hb-glyph {
+    width: 0.75rem;
+    height: 0.75rem;
+    flex-shrink: 0;
+    color: var(--muted-foreground, #5c626d);
+    opacity: 0.75;
+  }
+
+  /* ---- chips and tags --------------------------------------------- */
+
+  .hb-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: var(--radius-sm);
+    background: color-mix(in oklab, var(--foreground, #14161a) 5%, transparent);
+    white-space: nowrap;
+  }
+
+  .hb-chip b {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground, #14161a);
+  }
+
+  .hb-chip-accent {
+    background: color-mix(in oklab, var(--primary, #1a6dd6) 12%, transparent);
+  }
+
+  .hb-chip-accent b {
+    color: var(--primary, #1a6dd6);
+  }
+
+  .hb-tag {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.05rem 0.35rem;
+    border: 1px solid var(--border, #dcdfe5);
+    border-radius: var(--radius-sm);
+    font-size: 10px;
+    line-height: 1.5;
+    white-space: nowrap;
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-tag-mono,
+  .hb-tag code {
+    font-family: var(--hb-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  }
+
+  .hb-tag-warn {
+    border-color: color-mix(in oklab, var(--destructive, #c2410c) 45%, transparent);
+    color: var(--destructive, #c2410c);
+  }
+
+  .hb-tag-ok,
+  .hb-tag-healthy {
+    border-color: color-mix(in oklab, #1f9d55 45%, transparent);
+    color: #1f9d55;
+  }
+
+  .hb-tag-tight {
+    border-color: color-mix(in oklab, #b7791f 45%, transparent);
+    color: #b7791f;
+  }
+
+  .hb-tag-critical,
+  .hb-tag-exhausted {
+    border-color: color-mix(in oklab, var(--destructive, #c2410c) 45%, transparent);
+    color: var(--destructive, #c2410c);
+  }
+
+  /* ---- document shell --------------------------------------------- */
+
+  /* Header and footer stay put; only the markdown body scrolls, so the
+     document identity and the Ask button are always reachable.
+     The height must be definite (not max-height): the body sizes itself
+     against the card, and a content-sized card would let a long HANDOFF.md
+     push the footer out of view. */
+  .hb-card {
+    display: flex;
+    height: var(--hb-pane);
+    min-height: 12rem;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border, #dcdfe5);
+    border-radius: var(--radius-lg);
+    background: var(--card, color-mix(in oklab, var(--foreground, #14161a) 5%, var(--background, #ffffff)));
+  }
+
+  .hb-doc-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.6rem 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--border, #dcdfe5);
+  }
+
+  .hb-choices {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    padding-bottom: 0.1rem;
+  }
+
+  .hb-doc-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .hb-doc-sub {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 10.5px;
+    color: var(--muted-foreground, #5c626d);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hb-doc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  /* flex-basis 0 + height 0 keeps the body from contributing its content
+     height to the card, which is what makes the inner viewport scroll. */
+  .hb-doc-body {
+    position: relative;
+    flex: 1 1 0;
+    height: 0;
+    min-height: 0;
+  }
+
+  .hb-doc-body [data-slot="scroll-area-viewport"] {
+    position: absolute;
+    inset: 0;
+    overflow-x: hidden;
+  }
+
+  .hb-doc-foot {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-top: 1px solid var(--border, #dcdfe5);
+    font-family: var(--hb-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 10px;
+    color: var(--muted-foreground, #5c626d);
+    opacity: 0.8;
+  }
+
+  /* Ask Codex feedback: the click always reports what happened, because the
+     host silently rejects a follow-up while another turn is starting. */
+  .hb-doc-notice {
+    margin: 0;
+    font-size: 10.5px;
+    line-height: 1.4;
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-doc-notice[data-state="sent"] {
+    color: var(--hb-ok, #15803d);
+  }
+
+  .hb-doc-notice[data-state="copied"] {
+    color: var(--hb-ok, #15803d);
+  }
+
+  .hb-doc-notice[data-state="failed"] {
+    color: var(--destructive, #c2410c);
+  }
+
+  /* Manual fallback: when the host refuses the follow-up the prompt stays
+     selectable so the user can paste it into the composer themselves. */
+  .hb-doc-prompt {
+    width: 100%;
+    max-height: 4.5rem;
+    padding: 0.25rem 0.35rem;
+    border: 1px solid var(--border, #dcdfe5);
+    border-radius: var(--radius-sm);
+    background: var(--background, #ffffff);
+    color: var(--foreground, #14161a);
+    font-family: var(--hb-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 10px;
+    line-height: 1.45;
+    resize: none;
+  }
+
+  /* ---- responsive ------------------------------------------------- */
+
+  /* The doc column goes full width once the 3-column grid collapses. Using
+     grid-column here (not a span utility on the element) keeps the
+     single-column grid from growing an implicit second track. */
+  .hb-doc {
+    min-width: 0;
+  }
+
+  @media not all and (min-width: 820px) {
+    .hb-doc {
+      grid-column: 1 / -1;
+    }
+
+    /* Stacked layout: a 58vh pane per list wastes the viewport, so the lists
+       get a fixed comfortable height and the document keeps the clamp. */
+    .hb-board .hb-list {
+      height: 16rem;
+    }
+  }
+
+  /* ---- rendered HANDOFF.md ---------------------------------------- */
+
+  .hb-md {
+    font-size: 0.92em;
+    line-height: 1.6;
+    /* Long absolute paths and ids must wrap instead of forcing the doc
+       column to scroll sideways. */
+    overflow-wrap: anywhere;
+  }
+
+  .hb-md > :first-child {
+    margin-top: 0;
+  }
+
+  .hb-md h2 {
+    margin: 1.1em 0 0.4em;
+    padding-bottom: 0.2em;
+    border-bottom: 1px solid var(--border, #dcdfe5);
+    font-size: 1.05em;
+    font-weight: 600;
+  }
+
+  .hb-md h2:first-child {
+    margin-top: 0;
+  }
+
+  .hb-md h3 {
+    margin: 1em 0 0.3em;
+    font-size: 1em;
+    font-weight: 600;
+  }
+
+  .hb-md h4 {
+    margin: 0.9em 0 0.25em;
+    font-size: 0.95em;
+    font-weight: 600;
+  }
+
+  .hb-md p {
+    margin: 0.45em 0;
+  }
+
+  .hb-md ul,
+  .hb-md ol {
+    margin: 0.45em 0;
+    padding-left: 1.35em;
+    list-style: disc;
+  }
+
+  .hb-md ol {
+    list-style: decimal;
+  }
+
+  .hb-md li {
+    margin: 0.18em 0;
+  }
+
+  .hb-md li::marker {
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-md pre {
+    margin: 0.6em 0;
+    padding: 0.55em 0.7em;
+    border-radius: var(--radius-sm);
+    background: var(--muted, #f0f1f4);
+    color: var(--muted-foreground, #5c626d);
+    overflow: auto;
+    font-family: var(--hb-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.85em;
+  }
+
+  .hb-md code {
+    font-family: var(--hb-font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    font-size: 0.88em;
+  }
+
+  .hb-md :not(pre) > code {
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background: var(--muted, #f0f1f4);
+  }
+
+  .hb-md table {
+    width: 100%;
+    margin: 0.6em 0;
+    border-collapse: collapse;
+    font-size: 0.88em;
+  }
+
+  .hb-md th,
+  .hb-md td {
+    padding: 0.3em 0.45em;
+    border-bottom: 1px solid var(--border, #dcdfe5);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .hb-md th {
+    font-weight: 600;
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-md blockquote {
+    margin: 0.6em 0;
+    padding-left: 0.7em;
+    border-left: 2px solid var(--border, #dcdfe5);
+    color: var(--muted-foreground, #5c626d);
+  }
+
+  .hb-md hr {
+    margin: 0.9em 0;
+    border: 0;
+    border-top: 1px solid var(--border, #dcdfe5);
+  }
+}

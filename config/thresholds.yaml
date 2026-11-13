@@ -1,0 +1,71 @@
+# Codex 配额护栏阈值
+#
+# 剩余百分比 = 100 - used_percent。窗口：primary = 5 小时（300 分钟），secondary = 周（10080 分钟）。
+# 注释里的数值是本机当前取值，改这里不用动代码。
+
+thresholds:
+  # EXHAUSTED：剩余 ≤ 0.5% 视为彻底没量。硬信号（429 / rate_limit_reached_type）优先于此。
+  exhausted_5h: 0.5
+
+  # CRITICAL：剩余 ≤ 10% 就强制转入交接。实测超长上下文可在一次模型请求中
+  # 消耗数个百分点；5% 才收尾来不及生成并填写交接文档。
+  critical_5h: 10.0
+  critical_week: 5.0
+
+  # TIGHT：还能干，但不许扩范围、不许顺手重构。
+  tight_5h: 15.0
+  tight_week: 10.0
+
+  # 给「写交接文档本身」预扣的百分比。判 CRITICAL 时按 remaining - reserve 算可用量。
+  reserve_for_handoff: 3.0
+
+cadence:
+  # 每 N 次 Bash 调用刷一次额度（纯本地读，无感）
+  bash_calls_between_checks: 8
+  # 每 K 次模型请求刷一次
+  model_requests_between_checks: 10
+  # gate 快照的新鲜期，期内不重复读盘
+  cache_ttl_seconds: 60
+  # 超过这个时间，昂贵命令前必须强制刷新
+  force_refresh_seconds: 300
+  # Stop hook 最多连续逼几次写交接，防死循环
+  stop_hook_max_blocks: 2
+
+estimate:
+  # 每个待办项估几轮
+  turns_per_item: 1.5
+  # burn rate 的指数平滑系数
+  burn_ewma_alpha: 0.3
+  # 没有历史样本时的保守估计（每轮消耗的 5h 窗口百分比）
+  default_burn_per_turn: 1.0
+  # 交接文档视为「新鲜」的时间窗，秒
+  handoff_fresh_seconds: 1800
+
+wait_reset:
+  # 关闭：判 CRITICAL 直接交接。打开：若重置在 max_wait_minutes 内且工作量估得下去，
+  # 改为挂起到窗口重置后继续（省掉一次交接的上下文重建成本）。
+  enabled: false
+  max_wait_minutes: 20
+
+handoff:
+  # 相对仓库根目录；必须保证不被提交
+  dir: ".handoff"
+  # 如何排除：info-exclude = 写 .git/info/exclude（本地生效、不进版本库）
+  exclude_mode: "info-exclude"
+
+# 昂贵命令：这些一旦跑就可能被砍在中途，执行前必须是最新的额度判断。
+expensive_patterns:
+  - '\b(pnpm|npm|yarn|bun)\s+(install|i|add|ci)\b'
+  - '\b(pnpm|npm|yarn|bun)\s+(run\s+)?(build|test|lint|typecheck)\b'
+  - '\b(pytest|tox|vitest|jest|mocha|go\s+test|cargo\s+(build|test|check)|make|cmake|gradle|mvn)\b'
+  - '\bgit\s+(push|commit|rebase|merge|reset|cherry-pick)\b'
+  - '\b(docker|docker-compose|podman|kubectl|terraform|helm|ansible)\b'
+  - '\b(deploy|publish|release|rollout)\b'
+  - '\b(pip|pip3|uv|poetry)\s+(install|add|sync)\b'
+  - '\b(rsync|scp|ssh)\b'
+
+# 额度已耗尽时仍然放行的命令：写交接要用到它们
+handoff_allow_patterns:
+  - 'quota_guard\.py'
+  - '\bgit\s+(status|diff|log|rev-parse|stash\s+create|show|branch)\b'
+  - '\b(ls|cat|head|tail|wc|stat|sed|grep|rg|find)\b'

@@ -1,0 +1,92 @@
+{
+  "description": "Codex quota guard: check quota at session start, before expensive commands, and at turn end; force a handoff when the task cannot finish.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|compact|fork",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook SessionStart",
+            "timeout": 15,
+            "statusMessage": "检查 Codex 配额",
+            "additionalContextLimit": 1200
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook UserPromptSubmit",
+            "timeout": 6,
+            "additionalContextLimit": 1200
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook PreToolUse",
+            "timeout": 8,
+            "statusMessage": "核对配额预算"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook PostToolUse",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PostModelRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook PostModelRequest",
+            "timeout": 5,
+            "async": true
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook PreCompact",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 __SKILL_DIR__/scripts/quota_guard.py hook Stop",
+            "timeout": 10,
+            "statusMessage": "核对是否需要交接"
+          }
+        ]
+      }
+    ]
+  }
+}

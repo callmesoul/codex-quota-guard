@@ -1,0 +1,6 @@
+# Insert the Handoff Board host service into the desktop profile.
+# The service registers the /handoff-board/* web route that feeds the panel,
+# and the browser half (lib/client.js) adds the sidebar entry + main panel.
+- insert:
+    - id: handoff-board
+      name: dsh-handoff-board
