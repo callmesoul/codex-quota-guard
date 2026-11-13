@@ -136,7 +136,7 @@ skills/handoff-board/SKILL.md
 assets/
 ```
 
-`screenshots` 若要用，必须是 PNG 且放在 `assets/` 下。`docs/` 里的 `panel-codex-desktop.png`、`panel-1100.png` 等可以先拷进 `plugin/assets/` 再引用。
+`screenshots` 若要用，必须是 PNG 且放在 `assets/` 下。`docs/` 里的 `panel-codex-desktop.png`、`panel-736.png` 等可以先拷进 `plugin/assets/` 再引用。
 
 ### C4. 另一种形态：portable Agent Plugins
 

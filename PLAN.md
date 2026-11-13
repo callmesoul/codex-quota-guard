@@ -608,7 +608,7 @@ cd ../.. && codex plugin remove handoff-board@codex-quota-guard && codex plugin 
   `/api/board` 200（260 KB JSON）。
 - 用官方 `visualize/1.0.21/skills/visualize/scripts/render.py` 走真实双层 iframe 管线截图：
   1100px 三列、736px 两列 + 文档通栏、420px 单列；深浅色跟随 `data-theme`。
-  截图归档在 `docs/panel-1100.png`、`docs/panel-736.png`、`docs/panel-420.png`、`docs/panel-1100-dark.png`。
+  截图归档在 `docs/panel-736.png`、`docs/panel-420.png`、`docs/panel-1100-dark.png`。
 
 ### 15.7 桌面版侧栏「Handoff Board」空白：五个连环坑（2026-11-12）
 
@@ -1242,7 +1242,7 @@ python3 scripts/hook_trust.py --apply --home ... --codex /path/codex.exe
   420px 单列下 `Copy` / `Ask Codex` 与标题同排不换行。
 - 三方 sha256 一致（源 + WSL 缓存 + Windows 缓存 0.4.2），
   `assets/panel.fragment.html` md5 `73c2e810f68189775e00e1a2b6cef602`。
-- `docs/panel-1100.png`、`panel-1100-dark.png`、`panel-736.png`、`panel-420.png` 全部重拍。
+- `docs/panel-1100-dark.png`、`panel-736.png`、`panel-420.png` 全部重拍。
 
 ### 22.5 教训
 

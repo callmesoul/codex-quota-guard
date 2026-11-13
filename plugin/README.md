@@ -49,8 +49,6 @@ host CSS variables, so it follows the light or dark theme where it is embedded.
 - **Copy** puts the same takeover prompt on the clipboard without touching the host. When copying fails
   too, the prompt appears in a read-only box under the document so it can still be selected by hand.
 
-![Panel at 1100px](../docs/panel-1100.png)
-
 The panel is a Vue 3 + shadcn-vue app (`panel/handoff-board-panel/`) compiled to one HTML fragment:
 `plugin/assets/panel.fragment.html`. The fragment carries inline `<style>` + `<script>` only — the host
 iframe forbids network requests — and reads its data from the `<script type="application/json"

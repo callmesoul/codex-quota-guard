@@ -19,8 +19,6 @@
 | 交接 | `<repo>/.handoff/<utc>-<slug>/HANDOFF.md` + `handoff.json`，十段结构，自包含 |
 | 浏览 | Handoff Board 面板：按项目 → 会话 → 交接文档三列浏览，可从面板直接开下一个会话 |
 
-![Handoff Board 面板](docs/panel-1100.png)
-
 ## 架构
 
 三层叠加，确定性逻辑全部下沉到 hooks：
@@ -304,7 +302,7 @@ codex-quota-guard/
 │   └── assets/                 panel.fragment.html（构建产物）+ 图标
 ├── panel/handoff-board-panel/  Vue 3 面板源码（Codex 侧与 DSH 侧共用）
 ├── dsh-plugin/                 DeepSeek Harness 插件（宿主半 + 浏览器半）
-├── docs/                       面板与图标截图（panel-1100 / panel-codex-desktop /
+├── docs/                       面板与图标截图（panel-codex-desktop /
 │                              panel-dsh-desktop 是三处宿主里的同一块面板）
 │                              + publishing.md（发布到 Codex 插件市场的三条通道）
 └── .agents/plugins/marketplace.json   本地 marketplace，暴露 ./plugin
