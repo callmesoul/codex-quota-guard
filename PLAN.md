@@ -1547,7 +1547,7 @@ switch (null != l
 同时挂到两处：
 
 ```python
-ICON_SIZES = ["24x24"]
+ICON_SIZES = ["48x48"]   # 原为 "24x24"，公共目录要求图标方形 ≥48×48，已整体放大
 
 def icon_data_uri() -> str:
     payload = (PLUGIN_ROOT / "assets" / "handoff-board.svg").read_bytes()

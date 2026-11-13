@@ -76,6 +76,20 @@ codex plugin marketplace add .
 codex plugin add handoff-board@codex-quota-guard
 ```
 
+The plugin alone can also be installed straight from GitHub, without cloning the rest of the repo:
+
+```bash
+codex plugin marketplace add callmesoul/codex-quota-guard          # add @v0.4.3 to pin a tag
+codex plugin add handoff-board@codex-quota-guard
+```
+
+Sparse checkout needs **both** directories — the marketplace manifest lives under `.agents/`, so
+`--sparse plugin` alone fails with `marketplace root does not contain a supported manifest`:
+
+```bash
+codex plugin marketplace add callmesoul/codex-quota-guard --sparse .agents --sparse plugin
+```
+
 The plugin cache is a copy, not a symlink, so after editing anything under `plugin/`:
 
 ```bash

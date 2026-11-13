@@ -6,6 +6,8 @@
 
 额度是「账号 + 时间窗」的函数，5 小时窗口可能在你写到一半时用完。没有护栏时，代价是上下文白烧、任务停在半路、下一个会话从零猜。这个仓库把这件事做成确定性的：不再依赖模型「想起来看一眼」。
 
+仓库：<https://github.com/callmesoul/codex-quota-guard>。只想装面板插件、不装护栏的，直接看 [只装 handoff-board 插件](#只装-handoff-board-插件不用整个仓库)。
+
 ## 它做什么
 
 | 能力 | 表现 |
@@ -75,6 +77,7 @@
 ## 安装
 
 ```bash
+git clone https://github.com/callmesoul/codex-quota-guard.git
 cd codex-quota-guard
 ./install.sh
 ```
@@ -145,7 +148,7 @@ codex plugin add handoff-board@codex-quota-guard
 | 装在哪 | 软链到 `~/.agents/skills/codex-quota-guard`（**不是** `~/.codex/skills`，那里不生效）；状态在 `~/.codex/quota-guard/` |
 | 幂等 | 六步都能重跑；重跑会先清掉旧 quota_guard hook 条目再加，不会重复 |
 | 不需要真额度 | `selftest` 用临时目录跑，不碰真实 `gate.json` |
-| 别跑 `codex plugin list` | 它会起 app-server 然后挂住，不是装坏了 |
+| `codex plugin list` 要等几秒 | 它每次都会起 app-server 再查一遍，实测 3~8 秒才出结果，不是装坏了。`codex plugin marketplace list` 是纯本地读取，几十毫秒 |
 | 改源码要重装插件 | 插件缓存是拷贝，得 `codex plugin remove` 再 `add` 才生效 |
 
 ## 用法
@@ -282,8 +285,9 @@ dsh plugin --profile desktop add "file:$LOCALAPPDATA/dsh-handoff-board-stage"
 ```
 codex-quota-guard/
 ├── SKILL.md                    技能正文：取数、判定口径、检查时机、暂停协议、交接 schema
-├── PLAN.md                     实现方案与事故记录（1510 行，含每个坑的复现与修法）
+├── PLAN.md                     实现方案与事故记录（1600 行，含每个坑的复现与修法）
 ├── install.sh                  六步安装 / 卸载
+├── .gitignore                  排除 node_modules / __pycache__ / 构建产物
 ├── config/thresholds.yaml      阈值、节奏、昂贵命令正则
 ├── hooks/hooks.json            七个事件的定义（安装时替换 __SKILL_DIR__）
 ├── agents/openai.yaml          agent 清单
@@ -302,6 +306,7 @@ codex-quota-guard/
 ├── dsh-plugin/                 DeepSeek Harness 插件（宿主半 + 浏览器半）
 ├── docs/                       面板与图标截图（panel-1100 / panel-codex-desktop /
 │                              panel-dsh-desktop 是三处宿主里的同一块面板）
+│                              + publishing.md（发布到 Codex 插件市场的三条通道）
 └── .agents/plugins/marketplace.json   本地 marketplace，暴露 ./plugin
 ```
 
@@ -328,6 +333,10 @@ codex-quota-guard/
 **切换账号后额度看起来不对。** 见上文「切换账号」。判定为 `UNKNOWN` 时不停工，但别信那组数字。
 
 **`codex executable was not found`。** 跑 `codex login status`，必要时 `codex login`。永远不要为了「刷新额度」消耗 rate-limit reset credit——除非用户明确要求。
+
+**`marketplace root does not contain a supported manifest`。** `--sparse` 只给了 `plugin`。marketplace 清单在 `.agents/` 下，两个都要：`--sparse .agents --sparse plugin`。
+
+**公共目录上传被拒。** 本插件是本地 stdio MCP，而 local MCP 提交**仅限被批准的合作伙伴**——先按 [`docs/publishing.md`](docs/publishing.md) 申请 allowlist，批下来才能在门户选 **Skills only** 上传 ZIP。另外 CLI 0.154.0 内置的 `validate_plugin.py` 会报 `requires_local_executor` 不认识，那是本地校验器版本落后，**别删**这个字段。
 
 ## 相关文档
 
