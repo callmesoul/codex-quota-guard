@@ -31,10 +31,11 @@ codex plugin marketplace add git@github.com:callmesoul/codex-quota-guard.git
 codex plugin marketplace add /path/to/codex-quota-guard            # 本地目录
 ```
 
-Git 源还能只拉插件子目录，省带宽：
+Git 源还能只拉需要的子目录，省带宽。注意 `.agents`（放 marketplace.json）和 `plugin`（放插件本体）**两个都要**，只给 `--sparse plugin` 会报 `marketplace root does not contain a supported manifest`：
 
 ```bash
-codex plugin marketplace add callmesoul/codex-quota-guard --sparse plugin
+codex plugin marketplace add callmesoul/codex-quota-guard \
+  --sparse .agents --sparse plugin
 ```
 
 安装后验证：

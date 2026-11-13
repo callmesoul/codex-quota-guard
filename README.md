@@ -117,7 +117,7 @@ codex plugin marketplace add callmesoul/codex-quota-guard          # GitHub 源
 codex plugin add handoff-board@codex-quota-guard
 ```
 
-想锁版本就 `codex plugin marketplace add callmesoul/codex-quota-guard@v0.4.3`，本地目录直接给路径也行。
+想锁版本就 `codex plugin marketplace add callmesoul/codex-quota-guard@v0.4.3`，本地目录直接给路径也行。只想拉子目录就 `--sparse .agents --sparse plugin`（两个都要，少了 `.agents` 会报找不到 manifest）。
 插件是**本地 stdio MCP**，跑之前确认那个 home 的 `config.toml` 里有 `[features] enable_mcp_apps = true`。
 
 ### 让 agent 自己装
